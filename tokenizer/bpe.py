@@ -41,6 +41,20 @@ def train(text, vocab_size):
         merges[pair] = new_id
     return merges
 
+def build_vocab(merges):
+    """Map every token ID to the bytes it represents."""
+    vocab = {}
+    for i in range(256):
+        vocab[i] = bytes([i])
+    for (p0, p1), idx in merges.items():
+        vocab[idx] = vocab[p0] + vocab[p1]
+    return vocab
+
 if __name__ == "__main__":
-    merges = train("aaabdaaabac", 259)
+    text = "aaabdaaabac"
+    merges = train(text, 259)
+    vocab = build_vocab(merges)
+    ids = encode(text, merges)
     print(merges)
+    print(ids)
+    print(decode(ids, vocab) == text)
