@@ -6,3 +6,26 @@
 - Downloaded Frankenstein as test text.
 -BPE core (text_to_bytes, get_pair_counts, merge) implemented
 - Initial merge used a for loop, which reused tokens across overlapping pairs ("aaa" became 256, 256). Switched to a while loop to skip both tokens after a match. Caught it because output length didn't shrink.
+
+## 2026-10-13
+
+**Status:** Week 2 slipped due to work travel. Worked through week 2 design decisions and tokenizer code by phone while away from my laptop. Code below is committed but untested until I'm back at my laptop.
+
+### Tokenizer
+- Wrote the BPE training loop (`train`). It counts pairs, merges the most frequent, and records each merge in order. The recorded merges are the trained tokenizer.
+- Ties between equally frequent pairs go to the first one encountered, since Python's `max()` returns the first winner and dicts keep insertion order. Not "correct" either way, but deterministic, so the same text always produces the same tokenizer.
+- Two stopping conditions: stop if no pairs are left, and stop if the best pair only appears once, since merging it would just memorize one spot in the text.
+- `encode` adapted from Karpathy's minbpe. Chose it over a simpler loop that replays every merge, because it only considers merges that can apply to the current text, so it scales better on a full book.
+- `decode` uses `errors="replace"` because model-generated token sequences aren't guaranteed to be valid UTF-8 (multi-byte characters can get split). Without it, decoding would crash.
+- `build_vocab` maps every token ID to its bytes. Order matters: a merged token can only be built once both of its parents exist.
+
+### Design decisions
+- **Vocab size: 6,144.** Divisible by 64 for GPU efficiency. Large enough to keep common words intact and sequences shorter, small enough to keep pure-Python tokenizer training reasonable and avoid rare tokens the model sees too seldom to learn. The tokenizer will be trained on a sample of the corpus rather than the full set.
+- **Stride = context length.** Each chunk starts where the last ended, so no overlap. Overlapping chunks would mean far more training time spent rereading the same text, and with a smallish corpus, that pushes the model to memorize the books instead of learning how language works.
+- **Context length: 512.** Long enough to capture multi-paragraph context in fiction, still manageable on 12GB. Attention cost grows faster than context length, so if memory becomes a problem, I'll reduce batch size first, then fall back to 256.
+- **Embedding width: 512.** Smaller than GPT-2 small (768) to fit a modest corpus and reduce overfitting risk, while staying expressive. Divisible by 64, and splits cleanly into 8 attention heads of 64. Uses learned positional embeddings (one per slot, 0-511), added to the token embeddings.
+
+### Next
+- Test `train`, `encode`, `decode`, `build_vocab` with a round-trip check on a toy string, then Frankenstein.
+- Implement the data loader and embedding layers in PyTorch.
+- Begin week 3: attention.
