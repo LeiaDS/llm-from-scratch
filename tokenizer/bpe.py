@@ -25,9 +25,22 @@ def merge(ids, pair, new_id):
             i += 1
     return new_ids
 
+def train(text, vocab_size):
+    ids = text_to_bytes(text)
+    merges = {}
+    num_merges = vocab_size - 256
+    for k in range(num_merges):
+        counts = get_pair_counts(ids)
+        if not counts:
+            break
+        pair = max(counts, key=counts.get)
+        if counts[pair] < 2:
+            break
+        new_id = 256 + k
+        ids = merge(ids, pair, new_id)
+        merges[pair] = new_id
+    return merges
 
 if __name__ == "__main__":
-    ids = text_to_bytes("aaabdaaabac")
-    print(ids)
-    print(get_pair_counts(ids))
-    print(merge(ids, (97, 97), 256))
+    merges = train("aaabdaaabac", 259)
+    print(merges)
