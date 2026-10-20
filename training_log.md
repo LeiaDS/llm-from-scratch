@@ -29,3 +29,16 @@
 - Test `train`, `encode`, `decode`, `build_vocab` with a round-trip check on a toy string, then Frankenstein.
 - Implement the data loader and embedding layers in PyTorch.
 - Begin week 3: attention.
+
+
+## 2026-10-20
+
+- Built a single attention head (model/attention.py).
+- Query, key, value: Query - what self is offering, key - what self is, value - what self is worth
+- Why the mask is a buffer, not learned: If learned the model oculd just change the mask to be one, fulfilling whatever it's looking for with the first thing it sees.
+- Why masked scores are -inf instead of 0: 0 does not translate to 0%. -inf is always going to be the lowest there is.
+- Why divide by √head_size: to "turn the volume down"
+- Head size 64 = 512 / 8 heads; more heads means better training, but also more taxing training. 64 is a good nu mber for my GPU.
+- transpose(-2, -1): We count form the back because we are alwasy adding things to the FRONT of our grid. The back won't change.
+- Not yet run: no PyTorch installed on travel laptop setup. Shape test pending.
+- Next: multi-head attention.
