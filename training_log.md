@@ -73,3 +73,21 @@
 - Attention lets tokens share information; feedforward lets each token process what it gathered on its own.
 - GELU adds non-linearity. Without it, stacked linear layers collapse into one big linear layer.
 - Shape test passed: (2, 4, 512) in, (2, 4, 512) out.
+
+### Transformer block
+- Built TransformerBlock (model/block.py): layer norm, multi-head attention, residual add; then layer norm, feedforward, residual add.
+- Residuals add the input back instead of replacing it, so each block only learns what to change, and the training signal has a shortcut back through deep stacks.
+- Pre-norm: layer norm goes before attention and feedforward, not after.
+- Shape test passed: (2, 4, 512) in, (2, 4, 512) out.
+
+### Embeddings
+- Built Embeddings (model/embedding.py): token embedding (6,144 x 512 lookup table) plus positional embedding (512 x 512), added together.
+- Token embedding learns what a token means; positional embedding learns where it sits, so word order matters.
+- Shape test passed: (2, 4) token IDs in, (2, 4, 512) out. This is where IDs become the 512-wide vectors the rest of the model uses.
+
+### Full model
+- Assembled GPT (model/gpt.py): embeddings, 6 transformer blocks, final layer norm, output head (512 to 6,144, no bias).
+- Shape test passed: (2, 4) token IDs in, (2, 4, 6144) out. One score per vocab token at every position; the highest score is the model's next-token guess.
+- Parameter count: 25,459,712.
+- Config: vocab 6,144, context 512, embedding width 512, 8 heads of 64, 6 layers.
+- Layers set to 6 for now: faster feedback during the overfit test and trial runs. Will revisit (possibly 12, ~44M params) in week 5 once corpus size is set, since larger models need more data to avoid memorizing it.
