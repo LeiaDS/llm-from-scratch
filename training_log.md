@@ -42,3 +42,23 @@
 - transpose(-2, -1): We count form the back because we are alwasy adding things to the FRONT of our grid. The back won't change.
 - Not yet run: no PyTorch installed on travel laptop setup. Shape test pending.
 - Next: multi-head attention.
+
+## 2026-10-26
+
+**Status:** Behind schedule (week 4, finishing week 2 and 3 work). Sent Weiss a catch-up plan; he approved async updates in place of biweekly meetings.
+
+### Setup
+- Synced repo: local attention commit and the Oct 13 web edits had diverged. Rebased, resolved a conflict in this log, pushed.
+- Installed PyTorch 2.11 (CUDA 12.8) on the RTX 5070 Ti laptop. GPU detected. The 50-series needs the cu128 build or newer.
+
+### Attention
+- Single head shape test passed: (2, 4, 512) in, (2, 4, 64) out.
+- Built MultiHeadAttention: 8 heads of 64 run side by side, outputs concatenated back to 512, then a final linear projection (512 to 512) that lets the heads' findings mix.
+- Used nn.ModuleList instead of a plain list so PyTorch registers each head's weights for training.
+- Shape test passed: (2, 4, 512) in, (2, 4, 512) out. Same shape in and out means attention layers can stack, and residual connections can add the output back onto the input.
+
+### Correction to 2026-10-20
+- I had query and key backwards. Query is what a token is looking for. Key is what a token offers to be found by. Value is what it hands over once it's picked.
+
+### Next
+- Layer norm, feedforward block, transformer block with residuals, full model, overfit test.
