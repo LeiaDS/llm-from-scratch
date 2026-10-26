@@ -26,8 +26,25 @@ class Head(nn.Module):
         out = weights @ v
         return out
 
+class MultiHeadAttention(nn.Module):
+    def __init__(self, emb_dim, num_heads, context_length):
+        super().__init__()
+        head_size = emb_dim // num_heads   # 512 // 8 = 64
+
+        self.heads = nn.ModuleList([Head(emb_dim=emb_dim, head_size=head_size, context_length=context_length) for _ in range(num_heads)])
+        self.proj = nn.Linear(emb_dim, emb_dim)
+
+    def forward(self, x):
+        out = torch.cat([h(x) for h in self.heads], dim=-1)
+        out = self.proj(out)
+        return out
+
 if __name__ == "__main__":
     head = Head(emb_dim=512, head_size=64, context_length=512)
     x = torch.randn(2, 4, 512)   # 2 sentences, 4 tokens each, 512 numbers per token
     out = head(x)
     print(out.shape)
+    mha = MultiHeadAttention(emb_dim=512, num_heads=8, context_length=512)
+    out = mha(x)
+    print(out.shape)
+ 
