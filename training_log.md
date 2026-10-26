@@ -43,6 +43,12 @@
 - Not yet run: no PyTorch installed on travel laptop setup. Shape test pending.
 - Next: multi-head attention.
 
+### Correction to 2026-10-20
+- I had query and key backwards. Query is what a token is looking for. Key is what a token offers to be found by. Value is what it hands over once it's picked.
+
+### Next
+- Layer norm, feedforward block, transformer block with residuals, full model, overfit test.
+
 ## 2026-10-26
 
 **Status:** Behind schedule (week 4, finishing week 2 and 3 work). Sent Weiss a catch-up plan; he approved async updates in place of biweekly meetings.
@@ -62,8 +68,8 @@
 - eps (1e-5) prevents dividing by zero.
 - Test: input centered at 50 with spread 10 came out with mean ~0 and std ~1 per token. Passed.
 
-### Correction to 2026-10-20
-- I had query and key backwards. Query is what a token is looking for. Key is what a token offers to be found by. Value is what it hands over once it's picked.
-
-### Next
-- Layer norm, feedforward block, transformer block with residuals, full model, overfit test.
+### Feedforward
+- Built FeedForward (model/feedforward.py): expand 512 to 2048, GELU, shrink back to 512.
+- Attention lets tokens share information; feedforward lets each token process what it gathered on its own.
+- GELU adds non-linearity. Without it, stacked linear layers collapse into one big linear layer.
+- Shape test passed: (2, 4, 512) in, (2, 4, 512) out.
