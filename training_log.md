@@ -57,6 +57,11 @@
 - Used nn.ModuleList instead of a plain list so PyTorch registers each head's weights for training.
 - Shape test passed: (2, 4, 512) in, (2, 4, 512) out. Same shape in and out means attention layers can stack, and residual connections can add the output back onto the input.
 
+### Layer norm
+- Built LayerNorm (model/layernorm.py): subtract each token's mean, divide by its standard deviation, then apply learned scale (starts at 1) and shift (starts at 0).
+- eps (1e-5) prevents dividing by zero.
+- Test: input centered at 50 with spread 10 came out with mean ~0 and std ~1 per token. Passed.
+
 ### Correction to 2026-10-20
 - I had query and key backwards. Query is what a token is looking for. Key is what a token offers to be found by. Value is what it hands over once it's picked.
 
