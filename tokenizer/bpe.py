@@ -52,7 +52,7 @@ def build_vocab(merges):
 
 def decode(ids, vocab):
     """Turn a list of token IDs back into text."""
-    text_bytes = b"".join(??? for idx in ids)
+    text_bytes = b"".join(vocab[idx] for idx in ids)
     return text_bytes.decode("utf-8", errors="replace")
 
 def encode(text, merges):
