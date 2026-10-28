@@ -50,6 +50,22 @@ def build_vocab(merges):
         vocab[idx] = vocab[p0] + vocab[p1]
     return vocab
 
+def decode(ids, vocab):
+    """Turn a list of token IDs back into text."""
+    text_bytes = b"".join(??? for idx in ids)
+    return text_bytes.decode("utf-8", errors="replace")
+
+def encode(text, merges):
+    """Turn text into a list of token IDs using the learned merges."""
+    ids = text_to_bytes(text)
+    while len(ids) >= 2:
+        counts = get_pair_counts(ids)
+        pair = min(counts, key=lambda p: merges.get(p, float("inf")))
+        if pair not in merges:
+            break
+        ids = merge(ids, pair, merges[pair])
+    return ids
+
 if __name__ == "__main__":
     text = "aaabdaaabac"
     merges = train(text, 259)
