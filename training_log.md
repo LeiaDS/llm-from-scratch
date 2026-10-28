@@ -111,3 +111,11 @@
 - DataLoader stacks chunks into shuffled batches of 8.
 - Frankenstein test: about 206,000 tokens became 402 chunks of 512, in 51 batches (the last one has 2 chunks). Input and target batches are both (8, 512), matching what the model expects.
 - This closes out week 2.
+
+### Overfit test
+- Built training/overfit.py: one real batch of Frankenstein (8 x 512 tokens), trained for 200 steps with AdamW (lr 3e-4) and cross-entropy loss, on the RTX 5070 Ti.
+- Loss went from 8.91 to 0.0037. The starting loss matches random guessing across 6,144 tokens (about 8.7), and the model memorized the batch almost perfectly.
+- This confirms the model, loss, backpropagation, and optimizer all work together. Cleared for pretraining.
+- The training loop: forward pass, compute loss, zero_grad (clear old gradients), backward (work out how to nudge each weight), step (apply the nudges).
+- Run took about 2 minutes, mostly pure-Python tokenization. Plan for week 5: tokenize the corpus once and save the token IDs to disk.
+- Weeks 2 and 3 are now complete.
