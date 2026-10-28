@@ -91,3 +91,11 @@
 - Parameter count: 25,459,712.
 - Config: vocab 6,144, context 512, embedding width 512, 8 heads of 64, 6 layers.
 - Layers set to 6 for now: faster feedback during the overfit test and trial runs. Will revisit (possibly 12, ~44M params) in week 5 once corpus size is set, since larger models need more data to avoid memorizing it.
+
+## 2026-10-27
+
+### Tokenizer
+- encode and decode were missing from bpe.py. They were written by phone on 10-13 but never made it into the file. Rewrote both.
+- decode: look up each ID's bytes in the vocab, join them, decode as UTF-8 with errors="replace".
+- encode: start from raw bytes, repeatedly merge the pair that was learned earliest (lowest merge ID), stop when no pair has a merge rule. Earliest first, because later merges are built from earlier ones.
+- Toy test passed: "aaabdaaabac" (11 bytes) encodes to 5 tokens and decodes back to the original exactly.
