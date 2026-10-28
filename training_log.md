@@ -104,3 +104,10 @@
 - 441,144 bytes became 206,066 tokens (about 2.1 bytes per token) with only 256 merges. Expect closer to 4 bytes per token with the full 6,144 vocab.
 - First merges learned: "e ", "th", "d ", "er", "s ", "in". These are the most common pairs in English, plus end-of-word patterns, found purely by counting.
 - Speed: training on 50k characters takes about 1 second; encoding the whole book takes about 11 seconds. Pure Python is fine for now.
+
+### Data loader
+- Built TextDataset (training/dataset.py): slides a window across the token IDs, grabbing context_length + 1 tokens per chunk. Input is the chunk minus its last token, target is the chunk minus its first, so every position's target is the next token.
+- Stride = context length, so chunks don't overlap (per the week 2 decision). Leftover tokens at the end that can't fill a full chunk are dropped.
+- DataLoader stacks chunks into shuffled batches of 8.
+- Frankenstein test: about 206,000 tokens became 402 chunks of 512, in 51 batches (the last one has 2 chunks). Input and target batches are both (8, 512), matching what the model expects.
+- This closes out week 2.
