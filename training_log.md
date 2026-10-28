@@ -119,3 +119,9 @@
 - The training loop: forward pass, compute loss, zero_grad (clear old gradients), backward (work out how to nudge each weight), step (apply the nudges).
 - Run took about 2 minutes, mostly pure-Python tokenization. Plan for week 5: tokenize the corpus once and save the token IDs to disk.
 - Weeks 2 and 3 are now complete.
+- Base rundown of the loop:
+-logits: the model’s raw scores for what comes next
+-loss: compares the guess to the real answer, boils it down to -one wrongness number
+-zero_grad: clears out the old corrections so they don’t pile up
+-backward: figures out who’s to blame and which way to nudge each knob
+-step: tweaks the knobs based on who’s at fault
