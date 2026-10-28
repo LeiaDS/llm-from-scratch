@@ -99,3 +99,8 @@
 - decode: look up each ID's bytes in the vocab, join them, decode as UTF-8 with errors="replace".
 - encode: start from raw bytes, repeatedly merge the pair that was learned earliest (lowest merge ID), stop when no pair has a merge rule. Earliest first, because later merges are built from earlier ones.
 - Toy test passed: "aaabdaaabac" (11 bytes) encodes to 5 tokens and decodes back to the original exactly.
+
+- Frankenstein round trip passed: trained 256 merges on the first 50,000 characters, then encoded and decoded the whole book (441,144 bytes). Output matched exactly, including text the tokenizer never trained on.
+- 441,144 bytes became 206,066 tokens (about 2.1 bytes per token) with only 256 merges. Expect closer to 4 bytes per token with the full 6,144 vocab.
+- First merges learned: "e ", "th", "d ", "er", "s ", "in". These are the most common pairs in English, plus end-of-word patterns, found purely by counting.
+- Speed: training on 50k characters takes about 1 second; encoding the whole book takes about 11 seconds. Pure Python is fine for now.
