@@ -1,4 +1,5 @@
 import regex as re
+from collections import Counter
 
 SPLIT_PATTERN = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
@@ -14,6 +15,10 @@ def text_to_bytes(text):
     """Convert a string into a list of integers 0-255 (UTF-8 bytes)."""
     return list(text.encode("utf-8"))
 
+def count_chunks(text):
+    """Split text and count each unique chunk. Return {tuple_of_byte_ids: count}."""
+    chunk_counts = Counter(split_text(text))
+    return {tuple(text_to_bytes(chunk)): count for chunk, count in chunk_counts.items()}
 
 def get_pair_counts(ids):
 
@@ -39,18 +44,22 @@ def merge(ids, pair, new_id):
     return new_ids
 
 def train(text, vocab_size):
-    ids = text_to_bytes(text)
+    words = count_chunks(text)          # {tuple_of_ids: count}
     merges = {}
-    num_merges = vocab_size - 256
-    for k in range(num_merges):
-        counts = get_pair_counts(ids)
+    for k in range(vocab_size - 256):
+        # Count pairs inside every unique chunk, weighted by how often that chunk appears
+        counts = {}
+        for word, freq in words.items():
+            for pair, c in get_pair_counts(list(word)).items():
+                counts[pair] = counts.get(pair, 0) + c * freq
         if not counts:
             break
         pair = max(counts, key=counts.get)
         if counts[pair] < 2:
             break
         new_id = 256 + k
-        ids = merge(ids, pair, new_id)
+        # Apply the merge inside every chunk
+        words = {tuple(merge(list(word), pair, new_id)): freq for word, freq in words.items()}
         merges[pair] = new_id
     return merges
 

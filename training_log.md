@@ -142,7 +142,7 @@
 
 ## 2026-11-07
 ### Pre-splitting
-- Problem: the first tokenizer learned tokens that crossed word boundaries, like 'at once', '\n\nhad', and '''. BPE only counts byte pairs, so it merges whatever is most common.
+- Problem: the first tokenizer learned tokens that crossed word boundaries, like 'at once', '\n\nhad', and ') "'. BPE only counts byte pairs, so it merges whatever is most common.
 - Fix: split text into chunks with GPT-2's regex pattern before BPE. Merges can't cross chunks, so tokens won't be glued together across multiple words or punctuation.
 - The space attaches to the front of the next word (" married") because space + word is far fewer vocab slots than word + punctuation. What comes before a word is almost always a space, what comes after is chaos incarnate. Punctuation stays separate because there's many different kinds, and they're less predictable.
 - Kept the space glued on instead of making it its own token because it eats up too many of my 512 context slots.
@@ -152,3 +152,51 @@
 - Corpus has 118,845 curly ’ and 6,166 straight '. The pattern's contraction rules only match straight '.
 - Normalized both ’ and ‘ to ' inside the tokenizer (not the download script) because input at inference time coming from different mediums (phone, computer) will be different.
 - Tradeoff: model can't tell between opening single quotes and closing ones. It has to use context. The 6,166 straight ' already worked this way.
+
+### Training
+- Updated training to count pairs over unique chunks weighted by frequency. Of 493,163 chunks, only 27,083 were unique. Cut time from 14 minutes to 2 minutes. I predicted 6. First list of tokens:
+```
+6126 'nine '
+6127 ') “'
+6128 'at once'
+6129 'Lac'
+6130 'trying to '
+6131 'beautiful '
+6132 '\n\nhad '
+6133 'She was '
+6134 'live'
+6135 'opportunity '
+6136 'non'
+6137 'squ'
+6138 'written '
+6139 'led\n\n'
+6140 'tual '
+6141 'pare '
+6142 'Look'
+6143 'within'
+```
+Second test created the following:
+```
+6124 ' endeavoured'
+6125 'forth'
+6126 'prevail'
+6127 ' Gl'
+6128 ' friendship'
+6129 'det'
+6130 ' proposed'
+6131 'rounded'
+6132 ' compassion'
+6133 'refle'
+6134 ' solitude'
+6135 'fection'
+6136 ' cousins'
+6137 ' awake'
+6138 ' curtains'
+6139 ' pressed'
+6140 ' pupils'
+6141 ' dislike'
+6142 ' wept'
+6143 'bes'
+```
+
+-List one was random looking phrases and chunks, while list two provided (mostly) full words. Word portions (like 'refle') are portions of rarer words.
