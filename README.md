@@ -44,7 +44,7 @@ Requires Python 3.12 and PyTorch with CUDA (developed on an RTX 5070 Ti). Run ev
 from the project root.
 
     pip install torch --index-url https://download.pytorch.org/whl/cu128
-    pip install numpy truststore
+    pip install numpy truststore regex
 
     python scripts/download_gutenberg.py      # download and clean the 61-book corpus
     python -m scripts.train_tokenizer         # train the tokenizer (about 15 minutes)

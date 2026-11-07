@@ -1,9 +1,22 @@
+import regex as re
+
+SPLIT_PATTERN = r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+
+def normalize(text):
+    """Make text consistent before splitting."""
+    return text.replace("\u2019", "'").replace("\u2018", "'")
+
+def split_text(text):
+    """Chop text into chunks. Merges will never cross a chunk boundary."""
+    return re.findall(SPLIT_PATTERN, normalize(text))
+
 def text_to_bytes(text):
     """Convert a string into a list of integers 0-255 (UTF-8 bytes)."""
     return list(text.encode("utf-8"))
 
 
 def get_pair_counts(ids):
+
     """Count every adjacent pair in ids. Return a dict like {(97, 97): 4, ...}."""
     counts = {}
     for i in range(len(ids) - 1):

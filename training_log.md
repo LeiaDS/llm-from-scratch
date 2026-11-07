@@ -126,7 +126,7 @@
 -backward: figures out who’s to blame and which way to nudge each knob
 -step: tweaks the knobs based on who’s at fault
 
-## 2026-11-07
+## 2026-11-06
 ### Corpus
 - Chose a 19th-century corpus: 61 novels originally written in English, roughly 1810 to 1900 (Austen, the Brontës, Dickens, Eliot, Hardy, Gothic horror, Doyle, Wells, and American authors). 43 MB total, an estimated 10 to 11 million tokens.
 - Kept to one era so the model learns one consistent style instead of a blend.
@@ -139,3 +139,16 @@
 - Took 14 minutes in pure Python. Training on the full 43 MB would take hours, and a sample is enough to learn the common patterns.
 - Saved merges to tokenizer/merges.json so the tokenizer can be reused without retraining.
 - Next problem: encode is too slow to run on the full corpus with this many merges. Needs a faster approach before the corpus can be tokenized.
+
+## 2026-11-07
+### Pre-splitting
+- Problem: the first tokenizer learned tokens that crossed word boundaries, like 'at once', '\n\nhad', and '''. BPE only counts byte pairs, so it merges whatever is most common.
+- Fix: split text into chunks with GPT-2's regex pattern before BPE. Merges can't cross chunks, so tokens won't be glued together across multiple words or punctuation.
+- The space attaches to the front of the next word (" married") because space + word is far fewer vocab slots than word + punctuation. What comes before a word is almost always a space, what comes after is chaos incarnate. Punctuation stays separate because there's many different kinds, and they're less predictable.
+- Kept the space glued on instead of making it its own token because it eats up too many of my 512 context slots.
+- Prediction check: "’Tis a pity she’s gone." splits into 8 chunks: ', Tis, a, pity, she, 's, gone, .. The "'" before "Tis" stays alone because 'T isn't a contraction, but 't is because the rules are case sensitive.
+
+### Apostrophes
+- Corpus has 118,845 curly ’ and 6,166 straight '. The pattern's contraction rules only match straight '.
+- Normalized both ’ and ‘ to ' inside the tokenizer (not the download script) because input at inference time coming from different mediums (phone, computer) will be different.
+- Tradeoff: model can't tell between opening single quotes and closing ones. It has to use context. The 6,166 straight ' already worked this way.
