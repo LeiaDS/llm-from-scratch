@@ -125,3 +125,11 @@
 -zero_grad: clears out the old corrections so they don’t pile up
 -backward: figures out who’s to blame and which way to nudge each knob
 -step: tweaks the knobs based on who’s at fault
+
+## 2026-11-07
+### Corpus
+- Chose a 19th-century corpus: 61 novels originally written in English, roughly 1810 to 1900 (Austen, the Brontës, Dickens, Eliot, Hardy, Gothic horror, Doyle, Wells, and American authors). 43 MB total, an estimated 10 to 11 million tokens.
+- Kept to one era so the model learns one consistent style instead of a blend.
+- scripts/download_gutenberg.py downloads each book and strips Project Gutenberg's license header and footer, so the model doesn't learn legal boilerplate.
+- Tradeoff: 25.5M parameters would ideally want around 500M tokens (about 20 per parameter). This corpus is much smaller, so some memorization is expected. Validation loss will show how much.
+- Fixed an SSL certificate error on Windows with truststore (uses the Windows certificate store) instead of disabling verification.
