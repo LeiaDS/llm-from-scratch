@@ -133,3 +133,9 @@
 - scripts/download_gutenberg.py downloads each book and strips Project Gutenberg's license header and footer, so the model doesn't learn legal boilerplate.
 - Tradeoff: 25.5M parameters would ideally want around 500M tokens (about 20 per parameter). This corpus is much smaller, so some memorization is expected. Validation loss will show how much.
 - Fixed an SSL certificate error on Windows with truststore (uses the Windows certificate store) instead of disabling verification.
+
+### Tokenizer training
+- Trained the full tokenizer (6,144 vocab, 5,888 merges) on a 2 MB sample: 33,000 characters from the middle of each of the 61 books, so every author shapes the vocabulary and title pages are skipped.
+- Took 14 minutes in pure Python. Training on the full 43 MB would take hours, and a sample is enough to learn the common patterns.
+- Saved merges to tokenizer/merges.json so the tokenizer can be reused without retraining.
+- Next problem: encode is too slow to run on the full corpus with this many merges. Needs a faster approach before the corpus can be tokenized.
