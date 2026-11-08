@@ -28,6 +28,10 @@ BOOKS = [
     # Americans: Melville, Hawthorne, Twain, Alcott, Poe, Irving, Chopin, Thoreau
     2701, 25344, 76, 74, 1837, 514, 2147, 2148, 41, 160, 205,
 ]
+# Hand-picked canon from the first corpus, plus 500 sampled from the catalog
+with open("data/catalog/book_ids.txt") as f:
+    sampled = [int(line) for line in f]
+BOOKS = sorted(set(BOOKS + sampled))
 
 OUT_DIR = "data/gutenberg"
 os.makedirs(OUT_DIR, exist_ok=True)
