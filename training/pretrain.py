@@ -43,7 +43,7 @@ def evaluate(model, loader, max_batches=50):
     return total / n
 
 EPOCHS = int(sys.argv[1]) if len(sys.argv) > 1 else 3
-EVAL_EVERY = 250   # quiz less often, since there are ~2,660 steps now
+EVAL_EVERY = 1000   # quiz less often, since there are ~2,660 steps now
 step = 0
 best_val = float("inf")
 os.makedirs("checkpoints", exist_ok=True)
