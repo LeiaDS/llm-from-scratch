@@ -204,3 +204,8 @@ Second test created the following:
 ### Corpus Tokenization
 
 -After caching encoding, full corpus tokenization came in around 5 seconds, 12.1M tokens, 45MB.
+
+### Generation
+- Ran three epochs
+- Added generate.py and tested. first words generated-
+"prevented a stroll, and I have only to thank you it; for if I lose, Mr. Dixon, I should have half so much time to write, I don't know, I can't wish at all about it, and say"
