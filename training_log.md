@@ -212,3 +212,16 @@ Second test created the following:
 
 - 6 epochs:
 - Epochs 3-5 essentially plateaued. Val bottomed out at around 3.7. Sticking to six layers instead of twelve, val-training gap indicate memorization, not learning.
+- Condensed token size to 24 MB, using six layers instead of 12. 12 would simply promote more memorization, not actual learning. Amount of data is the bottleneck, not the processing.
+- Best val was 3.721 at step 12,750.
+
+
+ ## 2026-11-08
+### Corpus expansion
+- Why: the 61-book model plateaued around epoch 4, so a longer run would only memorize. More data is what earns more training.
+- Wrote scripts/pick_books.py to filter Gutenberg's catalog: English text, "Fiction" in subjects, LoCC PR or PS, first author born 1770 to 1870. PR/PS (English and American literature shelves) keeps out translations because English first texts will sound different and provide a more locked-in vocab.
+- 7,722 books matched. Sampled 500 with random.seed(42) so the same random 500 books are used if I lose everything in a horrible explosion.
+- Merged with the original 61 (a set drops duplicates): 557 books, 263.4 MB. Predicted ~350. New books averaged ~0.44 MB vs 0.7 MB for the originals, probably because the hand-picked ones were well known victorian era novels, all of which are HUGE. The random sample includes novellas, and story collections that no one has actually read.
+- Kept the existing tokenizer instead of retraining because we want the same era, the same vocab, the same checkpoints, and retraining would change every token ID, making old checkpoints and val losses incomparable.
+- Tokenized: 76.4M tokens in 32.5s (predicted 73.8M). 270,326 unique chunks (guessed 936K, then 155K). ~6x the text gave ~2.6x the unique chunks.
+- Tokens per MB rose slightly (0.281M to 0.290M) because new and unfamiliar words were cut into more pieces.
