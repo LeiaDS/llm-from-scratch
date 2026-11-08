@@ -209,3 +209,6 @@ Second test created the following:
 - Ran three epochs
 - Added generate.py and tested. first words generated-
 "prevented a stroll, and I have only to thank you it; for if I lose, Mr. Dixon, I should have half so much time to write, I don't know, I can't wish at all about it, and say"
+
+- 6 epochs:
+- Epochs 3-5 essentially plateaued. Val bottomed out at around 3.7. Sticking to six layers instead of twelve, val-training gap indicate memorization, not learning.

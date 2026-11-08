@@ -2,6 +2,7 @@ import numpy as np
 import os
 import torch
 import time
+import sys
 import torch.nn as nn
 from model.gpt import GPT
 from torch.utils.data import DataLoader
@@ -41,11 +42,14 @@ def evaluate(model, loader, max_batches=50):
     model.train()            # back to training mode
     return total / n
 
-EPOCHS = 3
+EPOCHS = int(sys.argv[1]) if len(sys.argv) > 1 else 3
 EVAL_EVERY = 250   # quiz less often, since there are ~2,660 steps now
 step = 0
 best_val = float("inf")
 os.makedirs("checkpoints", exist_ok=True)
+os.makedirs("results", exist_ok=True)
+log = open(f"results/loss_{EPOCHS}ep.csv", "w")
+log.write("step,epoch,train,val\n")
 start = time.time()
 model.train()
 for epoch in range(EPOCHS):
@@ -60,6 +64,8 @@ for epoch in range(EPOCHS):
             val_loss = evaluate(model, val_loader)
             mins = (time.time() - start) / 60
             print(f"epoch {epoch}  step {step}  train {loss.item():.3f}  val {val_loss:.3f}  {mins:.1f} min")
+            log.write(f"{step},{epoch},{loss.item():.4f},{val_loss:.4f}\n")
+            log.flush()   # push it to disk NOW, not whenever Python feels like it
             if val_loss < best_val:
                 best_val = val_loss
                 torch.save(model.state_dict(), "checkpoints/best.pt")
