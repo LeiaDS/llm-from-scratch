@@ -200,3 +200,7 @@ Second test created the following:
 ```
 
 -List one was random looking phrases and chunks, while list two provided (mostly) full words. Word portions (like 'refle') are portions of rarer words.
+
+### Corpus Tokenization
+
+-After caching encoding, full corpus tokenization came in around 5 seconds, 12.1M tokens, 45MB.

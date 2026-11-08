@@ -14,7 +14,8 @@ evaluated against GPT-2 small, and deployed on constrained hardware.
 - Weeks 1 to 3 complete: BPE tokenizer, data loader, and full model (6 layers, 25.5M
   parameters), verified with shape tests and an overfit test.
 - Pretraining in progress: 61-book corpus downloaded, 6,144-token tokenizer trained.
-  Next: faster encoding, tokenizing the full corpus, and the pretraining loop.
+  Next: faster encoding, tokenizing the full corpus, and the pretraining loop. - complete
+- Corpus tokenized, 12.1M tokens
 
 All working notes, results, and the reasoning behind each decision are in
 training_log.md.
