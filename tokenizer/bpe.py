@@ -77,7 +77,7 @@ def decode(ids, vocab):
     text_bytes = b"".join(vocab[idx] for idx in ids)
     return text_bytes.decode("utf-8", errors="replace")
 
-def encode(text, merges):
+def encode_chunk(text, merges):
     """Turn text into a list of token IDs using the learned merges."""
     ids = text_to_bytes(text)
     while len(ids) >= 2:
@@ -86,6 +86,17 @@ def encode(text, merges):
         if pair not in merges:
             break
         ids = merge(ids, pair, merges[pair])
+    return ids
+
+def encode(text, merges, cache=None):
+    """Turn text into token IDs one chunk at a time, reusing past results."""
+    if cache is None:
+        cache = {}
+    ids = []
+    for chunk in split_text(text):
+        if chunk not in cache:
+            cache[chunk] = encode_chunk(chunk, merges)
+        ids.extend(cache[chunk])
     return ids
 
 if __name__ == "__main__":
