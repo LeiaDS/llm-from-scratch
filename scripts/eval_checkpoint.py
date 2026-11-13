@@ -12,7 +12,8 @@ split = int(len(ids) * 0.9)
 val_ids = ids[split:]                    # just the held-out 10%
 val_loader = DataLoader(TextDataset(val_ids, 512, 512), batch_size=8)
 
-model = GPT(vocab_size=6144, emb_dim=512, num_heads=8, context_length=512, num_layers=6).to(device)
+LAYERS = int(sys.argv[2]) if len(sys.argv) > 2 else 6
+model = GPT(vocab_size=6144, emb_dim=512, num_heads=8, context_length=512, num_layers=LAYERS).to(device)
 model.load_state_dict(torch.load(sys.argv[1]))   # checkpoint path from the command line
 model.eval()
 

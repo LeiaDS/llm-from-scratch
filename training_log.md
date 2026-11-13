@@ -225,3 +225,9 @@ Second test created the following:
 - Kept the existing tokenizer instead of retraining because we want the same era, the same vocab, the same checkpoints, and retraining would change every token ID, making old checkpoints and val losses incomparable.
 - Tokenized: 76.4M tokens in 32.5s (predicted 73.8M). 270,326 unique chunks (guessed 936K, then 155K). ~6x the text gave ~2.6x the unique chunks.
 - Tokens per MB rose slightly (0.281M to 0.290M) because new and unfamiliar words were cut into more pieces.
+
+ ## 2026-11-13
+ ### Twelve vs Six Layer Tests
+ - Jumping from 6 to 12 layers (using the same 557 books, 3 epochs, and full val set), Val loss dropped from 3.202 to 3.129
+ - More data took the val loss from 3.735 to 3.202
+ - This shows that more data provides better results than more depth.

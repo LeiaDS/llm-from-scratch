@@ -22,7 +22,8 @@ device = "cuda"
 train_loader = DataLoader(train_ds, batch_size=8, shuffle=True)
 val_loader = DataLoader(val_ds, batch_size=8, shuffle=False)
 
-model = GPT(vocab_size=6144, emb_dim=512, num_heads=8, context_length=512, num_layers=6).to(device)
+LAYERS = int(sys.argv[3]) if len(sys.argv) > 3 else 6
+model = GPT(vocab_size=6144, emb_dim=512, num_heads=8, context_length=512, num_layers=LAYERS).to(device)
 optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4)
 loss_fn = nn.CrossEntropyLoss()
 
@@ -48,7 +49,7 @@ step = 0
 best_val = float("inf")
 os.makedirs("checkpoints", exist_ok=True)
 os.makedirs("results", exist_ok=True)
-log = open(f"results/loss_{EPOCHS}ep.csv", "w")
+log = open(f"results/loss_{EPOCHS}ep_{LAYERS}L.csv", "w")
 log.write("step,epoch,train,val\n")
 start = time.time()
 model.train()
@@ -68,5 +69,5 @@ for epoch in range(EPOCHS):
             log.flush()   # push it to disk NOW, not whenever Python feels like it
             if val_loss < best_val:
                 best_val = val_loss
-                torch.save(model.state_dict(), "checkpoints/best.pt")
+                torch.save(model.state_dict(), f"checkpoints/best_{LAYERS}L.pt")
         step += 1
