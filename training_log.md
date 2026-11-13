@@ -234,7 +234,9 @@ Second test created the following:
 
 ### Accuracy Test
 - Added an accuracy test alongside full val loss numbers.
--	        full val loss	 top-1 accuracy
-- 6 layers	3.202	         37.3%
-- 12 layers	3.129	         38.3%
-- I predicted 30% for both layers so I was pretty off.
+  | | full val loss | top-1 accuracy |
+  |---|---|---|
+  | 6 layers | 3.202 | 37.3% |
+  | 12 layers | 3.129 | 38.3% |
+- I predicted 30% for 13 layers, then assumed 6 would be about 8% lower. I was wrong.
+- 38% accuracy and a ~4% average probability on the right token aren’t a contradiction even if it looks like one. This is because loss punishes the times the model put almost no probability on the right token. Missing a rare token, like a character’s name, sends the loss way up even when the easy tokens are right. Easy tokens don't weigh as much.
