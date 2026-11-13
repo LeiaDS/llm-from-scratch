@@ -231,3 +231,10 @@ Second test created the following:
  - Jumping from 6 to 12 layers (using the same 557 books, 3 epochs, and full val set), Val loss dropped from 3.202 to 3.129
  - More data took the val loss from 3.735 to 3.202
  - This shows that more data provides better results than more depth.
+
+### Accuracy Test
+- Added an accuracy test alongside full val loss numbers.
+-	        full val loss	 top-1 accuracy
+- 6 layers	3.202	         37.3%
+- 12 layers	3.129	         38.3%
+- I predicted 30% for both layers so I was pretty off.

@@ -17,12 +17,18 @@ model = GPT(vocab_size=6144, emb_dim=512, num_heads=8, context_length=512, num_l
 model.load_state_dict(torch.load(sys.argv[1]))   # checkpoint path from the command line
 model.eval()
 
+                      
+
 loss_fn = nn.CrossEntropyLoss()
 total, n = 0.0, 0
+correct, seen = 0, 0
 with torch.no_grad():
     for x, y in val_loader:
         x, y = x.to(device), y.to(device)
         logits = model(x)
         total += loss_fn(logits.reshape(-1, logits.shape[-1]), y.reshape(-1)).item()
         n += 1
-print(f"{sys.argv[1]}: val loss {total / n:.3f} over {n} batches")
+        preds = logits.argmax(dim=-1)
+        correct += (preds == y).sum().item()
+        seen += y.numel()    
+print(f"{sys.argv[1]}: val loss {total / n:.3f}, accuracy {correct / seen:.1%} over {n} batches")
